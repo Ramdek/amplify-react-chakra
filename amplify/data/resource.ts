@@ -7,19 +7,63 @@ specifies that any user authenticated via an API key can "create", "read",
 "update", and "delete" any "Todo" records.
 =========================================================================*/
 const schema = a.schema({
-  Todo: a
+  Provider: a
     .model({
-      content: a.string(),
-    })
-    .authorization((allow) => [allow.publicApiKey()]),
-});
+      name: a.string().required(),
+      userId: a.string(),
+      houses: a.hasMany('HouseLocation', 'ownerId')
+    }).authorization(allow => [
+      allow.group('ADMINS')
+    ]),
+  Consumer: a
+    .model({
+      name: a.string().required(),
+      userId: a.string(),
+      consumption: a.hasMany('Consumption', 'consumerId')
+    }).authorization(allow => [
+      allow.group('PROVIDERS'),
+      allow.group('ADMINS')
+    ]),
+  HouseLocation: a
+    .model({
+      name: a.string().required(),
+      userIds: a.string().array(),
+      ownerId: a.id(),
+      houseOwner: a.belongsTo('Provider', 'ownerId'),
+      consumption: a.hasMany('Consumption', 'providerId')
+    }).authorization(allow => [
+      allow.owner(),
+      allow.group('ADMINS')
+    ]),
+  Consumption: a
+    .model({
+      userIds: a.string().array(),
+      availableCredits : a.integer().authorization(allow => [allow.ownerDefinedIn('providerUserId')]),
+      consumedRed : a.integer().authorization(allow => [allow.ownerDefinedIn('consumerUserId')]),
+      consumedGreen : a.integer().authorization(allow => [allow.ownerDefinedIn('consumerUserId')]),
+      consumedBlue : a.integer().authorization(allow => [allow.ownerDefinedIn('consumerUserId')]),
+      providerUserId: a.string(),
+      consumerUserId: a.string(),
+      providerId: a.id(),
+      consumerId: a.id(),
+      provider: a.belongsTo('HouseLocation', 'providerId'),
+      consumer: a.belongsTo('Consumer', 'consumerId'),
+    }).authorization(allow => [
+      allow.ownerDefinedIn('providerUserId').to(["read"]),
+      allow.ownerDefinedIn('consumerUserId').to(["read"]),
+    ])
+}).authorization(allow => [
+  allow.group('ADMINS'),
+  allow.ownerDefinedIn('userId').to(['read']),
+  allow.ownersDefinedIn('userIds').to(['read'])
+]);
 
 export type Schema = ClientSchema<typeof schema>;
 
 export const data = defineData({
   schema,
   authorizationModes: {
-    defaultAuthorizationMode: "apiKey",
+    defaultAuthorizationMode: "userPool",
     // API Key is used for a.allow.public() rules
     apiKeyAuthorizationMode: {
       expiresInDays: 30,
