@@ -13,6 +13,7 @@ const schema = a.schema({
       userId: a.string(),
       houses: a.hasMany('HouseLocation', 'ownerId')
     }).authorization(allow => [
+      allow.ownerDefinedIn('userId').to(['read']),
       allow.group('ADMINS')
     ]),
   Consumer: a
@@ -27,12 +28,13 @@ const schema = a.schema({
   HouseLocation: a
     .model({
       name: a.string().required(),
+      providerId: a.string(),
       userIds: a.string().array(),
       ownerId: a.id(),
       houseOwner: a.belongsTo('Provider', 'ownerId'),
       consumption: a.hasMany('Consumption', 'providerId')
     }).authorization(allow => [
-      allow.owner(),
+      allow.ownerDefinedIn('providerId'),
       allow.group('ADMINS')
     ]),
   Consumption: a
