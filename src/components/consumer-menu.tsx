@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { generateClient } from "aws-amplify/data";
 import type { Schema } from "../../amplify/data/resource";
 
 import {
@@ -13,17 +12,17 @@ import {
   TableCaption,
   TableContainer,
 } from '@chakra-ui/react';
+import Provider from "../api/Provider";
 
-const client = generateClient<Schema>();
 
-const ConsumerMenu = () => {
+type PropsType = { providerClient: Provider }
+
+const ConsumerMenu = ({ providerClient } : PropsType) => {
 
     const [consumers, setTodos] = useState<Array<Schema["Consumer"]["type"]>>([]);
     
     useEffect(() => {
-        client.models.Provider.observeQuery().subscribe({
-            next: (data) => setTodos([...data.items]),
-        });
+        providerClient.subscribe((data: { items: any; }) => setTodos([...data.items]));
     }, []);
 
     return (

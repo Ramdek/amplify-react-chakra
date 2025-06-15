@@ -1,6 +1,4 @@
 import { SetStateAction, useEffect, useState } from "react";
-import { generateClient } from "aws-amplify/data";
-import { p } from "aws-amplify";
 import type { Schema } from "../../../amplify/data/resource";
 
 import {
@@ -13,12 +11,12 @@ import {
 } from '@chakra-ui/react';
 
 import HouseItem from "./house-item";
+import HouseLocation from "../../api/HouseLocation";
 
-const client = generateClient<Schema>();
 
-type PropsType = { providerName: string }
+type PropsType = { houseLocationClient: HouseLocation, providerId: string, providerName: string }
 
-const HouseList = ({ providerName }: PropsType ) => {
+const HouseList = ({ houseLocationClient, providerId, providerName }: PropsType ) => {
 
   const [houses, sethouses] = useState<Array<Schema["HouseLocation"]["type"]>>([]);
   const [houseValue, setHouseValue] = useState('');
@@ -27,23 +25,15 @@ const HouseList = ({ providerName }: PropsType ) => {
   const handleChange = (event: { target: { value: SetStateAction<string>; }; }) => setHouseValue(event.target.value);
 
   useEffect(() => {
-    client.models.HouseLocation.observeQuery({
-      filter: {
-        userIds: {
-          contains: providerName,
-        },
-      },
-    }).subscribe({
-      next: (data) => {
+    houseLocationClient.subscribeWithProviderId(providerId, (data: { items: any; }) => {
         sethouses([...data.items])
         setAddLoading(false);
-      },
-    });
+      });
   }, []);
 
   const addHouse = () => {
     setAddLoading(true);
-    client.models.HouseLocation.create({ name: houseValue, userIds: [ providerName ] });
+    houseLocationClient.create(houseValue, providerId, providerName);
     setHouseValue('');
   }
 
@@ -51,7 +41,7 @@ const HouseList = ({ providerName }: PropsType ) => {
     <>
       <Accordion defaultIndex={[0]} allowToggle>
         {houses.map((house) => (
-          <HouseItem key={house.id} house={house} />
+          <HouseItem key={house.id} houseLocationApi={houseLocationClient} house={house} />
         ))}
       </Accordion>
 

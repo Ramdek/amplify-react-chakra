@@ -15,8 +15,6 @@ import { Tabs, TabList, TabPanels, Tab, TabPanel } from '@chakra-ui/react'
 import { LuUser } from "react-icons/lu";
 
 import { useAuthenticator } from '@aws-amplify/ui-react';
-import type { Schema } from "../amplify/data/resource";
-import { generateClient } from "aws-amplify/data";
 import { fetchAuthSession } from 'aws-amplify/auth';
 
 import ProviderMenu from "./components/provider-menu";
@@ -24,10 +22,15 @@ import ConsumerMenu from "./components/consumer-menu";
 import AdminMenu from "./components/admin-menu";
 
 import UserProfile from "./utils/UserProfile";
+import { generateClient } from "aws-amplify/api";
+import { Schema } from "../amplify/data/resource";
+import ClientFactory from "./api/clientFactory";
+
 
 const client = generateClient<Schema>();
 
 function App() {
+
   const [groups, setGroups] = useState<Array<string>>([]);
   const [loading, setLoading] = useState(true);
 
@@ -35,9 +38,11 @@ function App() {
     const fetchUserAndGroups = async () => {
       const { tokens } = await fetchAuthSession();
 
+      console.log(tokens)
+
       const username = tokens?.accessToken.payload.username as string;
       if (username != null) {
-        UserProfile.setName(username);
+        UserProfile.setCredentials(tokens?.accessToken);
       }
 
       const groups = tokens?.accessToken.payload["cognito:groups"] as Array<string>;
@@ -50,6 +55,13 @@ function App() {
 
   const isAdmin = () => groups.includes('ADMINS');
   const isProvider = () => groups.includes('PROVIDERS');
+
+  const clientFactory = new ClientFactory(client);
+  const providerClient = clientFactory.createProviderClient();
+  const consumerClient = clientFactory.createConsumerClient();
+  const houseLocationClient = clientFactory.createHouseLocationClient();
+
+  console.log(houseLocationClient)
 
   const { signOut } = useAuthenticator();
 
@@ -88,24 +100,24 @@ function App() {
                 <TabPanels mt='2' maxHeight='480px' overflow='scroll'>
                   <TabPanel>
 
-                    <AdminMenu/>
+                    <AdminMenu providerClient={providerClient} consumerClient={consumerClient} />
 
                   </TabPanel>
                   <TabPanel>
 
-                    <ProviderMenu isAdmin={isAdmin()} />
+                    <ProviderMenu houseLocationClient={houseLocationClient} providerClient={providerClient} isAdmin={isAdmin()} />
 
                   </TabPanel>
                   <TabPanel>
 
-                    <ConsumerMenu/>
+                    <ConsumerMenu providerClient={providerClient}/>
 
                   </TabPanel>
                 </TabPanels>
               </Tabs>
             ) : (
               <Center minHeight="50%">
-               <Spinner></Spinner>
+               <Spinner/>
               </Center>
             )
           }

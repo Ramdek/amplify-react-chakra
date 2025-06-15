@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { generateClient } from "aws-amplify/data";
 import type { Schema } from "../../../amplify/data/resource";
 
 import {
@@ -15,19 +14,19 @@ import {
 } from '@chakra-ui/react';
 
 import Identification from "./identification"
+import HouseLocation from "../../api/HouseLocation";
 
-const client = generateClient<Schema>();
 
 type PropsType = |
-  { house: Schema["HouseLocation"]["type"] };
+  { houseLocationApi: HouseLocation, house: Schema["HouseLocation"]["type"] };
 
-const HouseItem = ({ house } : PropsType) => {
+const HouseItem = ({ houseLocationApi, house } : PropsType) => {
 
   const [delLoading, setDelLoading] = useState(false);
 
   const deleteHouse = () => {
     setDelLoading(true);
-    client.models.HouseLocation.delete({ id: house.id });
+    houseLocationApi.delete(house.id);
   }
 
   return (

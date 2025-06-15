@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 import { Schema } from '../../amplify/data/resource';
-import { generateClient } from 'aws-amplify/api';
 
 import {
   Accordion,
@@ -12,31 +11,37 @@ import {
   Card,
   CardBody,
   Heading,
-  Text
+  Text,
+  Spinner,
+  Center
 } from '@chakra-ui/react';
 
 import Identification from './ui/identification';
 import HouseList from './ui/house-list';
 import UserProfile from '../utils/UserProfile';
+import Provider from '../api/Provider';
+import HouseLocation from '../api/HouseLocation';
 
 
-const client = generateClient<Schema>();
+type PropsType = { houseLocationClient: HouseLocation, providerClient: Provider, isAdmin: boolean };
 
-type PropsType = { isAdmin: boolean };
-
-const ProviderMenu = ({ isAdmin } : PropsType) => {
+const ProviderMenu = ({ houseLocationClient, providerClient, isAdmin } : PropsType) => {
 
   const [providers, setProviders] = useState<Array<Schema["Provider"]["type"]>>([]);
+  const [idLoaded, setIdLoaded] = useState(false);
 
   if (isAdmin) {
     useEffect(() => {
-      client.models.Provider.observeQuery().subscribe({
-        next: (data) => setProviders([...data.items]),
-      });
+      providerClient.subscribe((data: { items: any; }) => setProviders([...data.items]));
     }, []);
   }
 
-  console.log(providers)
+  const waitId = async () => {
+    await UserProfile.waitIdLoaded();
+    setIdLoaded(true);
+  }
+
+  waitId();
 
   return (
     <>
@@ -56,7 +61,11 @@ const ProviderMenu = ({ isAdmin } : PropsType) => {
                   <Card>
                     <CardBody p='2'>
                       <Text>Locations</Text>
-                      <HouseList providerName={provider.userId as string} />
+                      <HouseList 
+                        houseLocationClient={houseLocationClient} 
+                        providerId={provider.id} 
+                        providerName={provider.userId == null ? provider.id : provider.userId} 
+                      />
                     </CardBody>
                   </Card>
                 </AccordionPanel>
@@ -65,7 +74,17 @@ const ProviderMenu = ({ isAdmin } : PropsType) => {
         </Accordion>
       ) : (
         <>
-          <HouseList providerName={UserProfile.getName()}/>
+          {idLoaded ? 
+            <HouseList 
+              houseLocationClient={houseLocationClient} 
+              providerId={UserProfile.getId()} 
+              providerName={UserProfile.getName()}
+            />
+          : 
+            <Center minHeight="50%">
+              <Spinner/>
+            </Center>
+          }
         </>
       )}
     </>

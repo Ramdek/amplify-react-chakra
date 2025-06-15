@@ -6,6 +6,7 @@ import {
   Text
 } from '@chakra-ui/react';
 
+
 type Actor = |
   { actor: Schema["Consumer"]["type"] } |
   { actor: Schema["Provider"]["type"] }

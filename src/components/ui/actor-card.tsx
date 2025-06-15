@@ -1,5 +1,4 @@
 import { SetStateAction, useState } from "react";
-import { generateClient } from "aws-amplify/data";
 import type { Schema } from "../../../amplify/data/resource";
 
 import {
@@ -18,9 +17,10 @@ import {
   Tooltip
 } from '@chakra-ui/react';
 
-import Identification from "./identification"
 
-const client = generateClient<Schema>();
+import Identification from "./identification"
+import Provider from "../../api/Provider";
+import Consumer from "../../api/Consumer";
 
 type PropsType = |
   { actor: Schema["Consumer"]["type"], actorType: string } |
@@ -30,7 +30,7 @@ const ActorCard = ({ actor, actorType } : PropsType) => {
 
   const [userValue, setUserValue] = useState(actor.userId);
   const [delLoading, setDelLoading] = useState(false);
-  const toast = useToast({ position: 'top' })
+  const toast = useToast({ position: 'top' });
   
   const handleChange = (event: { target: { value: SetStateAction<string | null | undefined>; }; }) => setUserValue(event.target.value);
 
@@ -39,7 +39,13 @@ const ActorCard = ({ actor, actorType } : PropsType) => {
     // TODO: handle empty value (print None after update)
     if (userValue != actor.userId) {
 
-      let promise = client.models[actorType].update({ userId: userValue });
+      let promise = new Promise<void>(res => res());
+      if (actorType === "Provider") {
+        promise = Provider.updateAssociatedUser(actor as Schema["Provider"]["type"], userValue as string);
+      } else if (actorType === "Consumer") {
+        promise = Consumer.updateAssociatedUser(actor as Schema["Consumer"]["type"], userValue as string);
+      }
+      
       toast.promise(promise, {
         success: { title: 'Updated successfully', description: `${actor.name} #${actor.id.toUpperCase().slice(0, 4)} associated account updated` },
         error: { title: 'Update failed', description: 'Something went wrong :(' },
@@ -50,7 +56,11 @@ const ActorCard = ({ actor, actorType } : PropsType) => {
 
   const deleteActor = (id: string) => {
     setDelLoading(true);
-    client.models[actorType].delete({ id });
+    if (actorType === "Provider") {
+      Provider.delete(id);
+    } else if (actorType === "Consumer") {
+      Consumer.delete(id);
+    }
   }
 
   return (

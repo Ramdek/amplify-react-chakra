@@ -1,46 +1,42 @@
-import { useEffect, useState } from "react";
-import { generateClient } from "aws-amplify/data";
+import { SetStateAction, useEffect, useState } from "react";
 import type { Schema } from "../../../amplify/data/resource";
 
 import {
   Button,
-  Card,
-  CardBody,
   Center,
   Input,
   InputGroup,
-  InputRightElement,
-  Flex,
-  Spacer,
-  Box
+  InputRightElement
 } from '@chakra-ui/react';
 
 import ActorCard from "./actor-card";
 
-const client = generateClient<Schema>();
 
-type PropsType = |
-  { actorType: string };
+type PropsType = { actorClient: Actor };
 
-const ActorList = ({ actorType } : PropsType) => {
+const ActorList = ({ actorClient } : PropsType) => {
 
+  const actorType: string = actorClient.getType();
   const [actors, setActors] = useState<Array<Schema[actorType]["type"]>>([]);
   const [actorValue, setActorValue] = useState('');
   const [addLoading, setAddLoading] = useState(false);
 
-  const handleChange = (event) => setActorValue(event.target.value);
+  const handleChange = (event: { target: { value: SetStateAction<string>; }; }) => setActorValue(event.target.value);
 
   useEffect(() => {
-    client.models[actorType].observeQuery().subscribe({
-      next: (data) => setActors([...data.items]),
-    });
+
+    const subscribeCallback = (data: { items: any; }) => {
+      setActors([...data.items]);
+      setAddLoading(false);
+      setActorValue('');
+    }
+
+    actorClient.subscribe(subscribeCallback);
   }, []);
 
   const addActor = () => {
     setAddLoading(true);
-    client.models[actorType].create({ name: actorValue });
-    setAddLoading(false);
-    setActorValue('');
+    actorClient.create(actorValue);
   }
 
   return (

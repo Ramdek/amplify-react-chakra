@@ -1,18 +1,58 @@
-const UserProfile = (function() {
-  let full_name: string = "";
+import { generateClient } from "aws-amplify/api";
+import { Schema } from "../../amplify/data/resource";
 
-  const getName = function() {
-    return full_name;    // Or pull this from cookie/localStorage
+const client = generateClient<Schema>();
+
+const UserProfile = (function() {
+
+  let id: string = "";
+  let owner_info: string = "";
+  let full_name: string = "";
+  let id_loaded: boolean = false;
+
+  const getId = function() {
+    return id;
   };
 
-  const setName = function(name: string) {
-    full_name = name;     
-    // Also set this in cookie/localStorage
+  const retrieveId = async function() {
+
+    let fetch = await client.models.Provider.list({
+      filter: {
+        userId: { eq : full_name }
+      }
+    });
+
+    id = fetch?.data[0].id;
+    id_loaded = true;
+  };
+
+  const waitIdLoaded = () => {
+
+    const poll = (res: Function) => {
+      if (id_loaded) res();
+      else setTimeout((_: any) => poll(res), 200);
+    }
+
+    return new Promise(poll);
+  }
+
+  const getName = function() {
+    return full_name;
+  };
+
+  const setCredentials = function(accessToken) {
+    
+    const sub = accessToken.payload.sub as string;
+    full_name = accessToken.payload.username as string;
+    owner_info = `${sub}::${full_name}`;
+    retrieveId();
   };
 
   return {
+    getId: getId,
     getName: getName,
-    setName: setName
+    setCredentials: setCredentials,
+    waitIdLoaded: waitIdLoaded
   }
 
 })();
