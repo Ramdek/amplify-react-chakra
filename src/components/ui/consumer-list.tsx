@@ -66,7 +66,7 @@ const ConsumerList = ({ clientFactory, houseLocationId, providerId, editable }: 
     <>
       { ! loading ? consumersConsumptions.map(consumerConsumption => (
         <Box key={consumerConsumption.consumption.id}>
-          <ConsumerCredits actor={consumerConsumption.consumer} consumption={consumerConsumption.consumption} consumptionClient={consumptionClient} isAdmin={true} />
+          <ConsumerCredits actor={consumerConsumption.consumer} consumption={consumerConsumption.consumption} consumptionClient={consumptionClient} />
           <Divider marginY='5' />
         </Box>
       )) : (

@@ -64,7 +64,7 @@ const ActorCard = ({ actor, actorClient } : PropsType) => {
         <Spacer/>
 
         <Badge mr='2' colorScheme='blue' >account</Badge>
-        <Editable mr='4' placeholder='None' defaultValue={actor.userId}>
+        <Editable mr='4' placeholder='None' defaultValue={actor.userId as string}>
           <Tooltip label='Click to edit' shouldWrapChildren={true}>
             <EditablePreview paddingInline='2' _hover={{
             background: useColorModeValue('gray.100', 'gray.700'),

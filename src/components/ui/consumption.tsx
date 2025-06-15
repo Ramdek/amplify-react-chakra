@@ -8,9 +8,13 @@ import {
 } from '@chakra-ui/react';
 
 
-type PropsType = { red: number, green: number, blue: number }
+type PropsType = { red: number | null | undefined, green: number | null | undefined, blue: number | null | undefined }
 
 const Consumption = ({red, green, blue}: PropsType) => {
+
+  red = Number(red);
+  green = Number(green);
+  blue = Number(blue);
 
   const tot = red + green + blue;
 

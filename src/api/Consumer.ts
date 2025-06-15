@@ -1,5 +1,6 @@
 import { Schema } from "../../amplify/data/resource";
 import ActorClient from "./Actor";
+import ClientFactory from "./clientFactory";
 
 type ConsumerModel = Schema["Consumer"]["type"];
 
@@ -53,7 +54,7 @@ class ConsumerClient implements ActorClient {
 
   subscribe(subscribeCallback: Function) {
     this.#client.observeQuery().subscribe({
-      next: (data) => subscribeCallback(data),
+      next: (data: any) => subscribeCallback(data),
     });
   }
 
@@ -61,7 +62,7 @@ class ConsumerClient implements ActorClient {
 
     const consumptionClient = this.#clientFactory.createConsumptionClient();
 
-    return new Promise<void>(async (res, rej) => {
+    return new Promise<void>(async (res) => {
 
       const userUpdatedId = associatedUserName === "" ? consumer.id : associatedUserName;
 

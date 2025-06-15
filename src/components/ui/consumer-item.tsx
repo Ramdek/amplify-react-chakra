@@ -12,9 +12,11 @@ import ConsumptionClient from '../../api/Consumption';
 import Consumption from "./consumption";
 
 
-type PropsType = { actor: {id: string, name: string}, consumption: Schema["Consumption"]["type"], consumptionClient: ConsumptionClient }
+type PropsType = |
+  { actor: Schema["Consumer"]["type"], consumption: Schema["Consumption"]["type"], consumptionClient: ConsumptionClient; isAdmin: boolean } |
+  { actor: Schema["Provider"]["type"], consumption: Schema["Consumption"]["type"], consumptionClient: ConsumptionClient; isAdmin: boolean }
 
-const ConsumerCredits = ({ actor, consumption, consumptionClient } : PropsType) => {
+const ConsumerItem = ({ actor, consumption, consumptionClient, isAdmin } : PropsType) => {
 
   const [delLoading, setDelLoading] = useState(false);
 
@@ -29,15 +31,20 @@ const ConsumerCredits = ({ actor, consumption, consumptionClient } : PropsType) 
 
   return (
     <>
-      <Flex>
-        <Identification actor={actor} />
-        <Spacer/>
-        <Button isLoading={delLoading} size='xs' colorScheme='red' onClick={deleteConsumption} >Delete</Button>
-      </Flex>
+      {actor ? (
+        <Flex>
+          <Identification actor={actor} />
+          <Spacer/>
+          { isAdmin ? 
+            (
+              <Button isLoading={delLoading} size='xs' colorScheme='red' onClick={deleteConsumption} >Delete</Button>
+            ): ''}
+        </Flex>
+      ) : ''}
       <Consumption red={consumption.consumedRed} green={consumption.consumedGreen} blue={consumption.consumedBlue} />
       <Credits updateAction={updateCredits} credits={`${consumption.availableCredits}`} />
     </>
   )
 }
 
-export default ConsumerCredits;
+export default ConsumerItem;

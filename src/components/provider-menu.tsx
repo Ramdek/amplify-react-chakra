@@ -85,7 +85,6 @@ const ProviderMenu = ({ clientFactory, isAdmin } : PropsType) => {
               actorId={UserProfile.getId()} 
               actorName={UserProfile.getName()}
               isProvider={true}
-              isAdmin={isAdmin}
               editable={true}
             />
           : 

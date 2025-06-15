@@ -46,8 +46,10 @@ const HouseList = ({ clientFactory, actorId, actorName, isProvider, editable }: 
           const customList: HouseConsumptionList = [];
   
           for (const consumption of consumptions) {
-  
-            const house = await houseLocationClient.get(consumption.providerId);
+
+            let providerId = consumption.providerId as string;
+
+            const house = await houseLocationClient.get(providerId);
             const houseMatch = customList.find((h: HouseConsumption) => h?.house?.id === house.id);
   
             if (houseMatch) {
@@ -85,9 +87,10 @@ const HouseList = ({ clientFactory, actorId, actorName, isProvider, editable }: 
                 clientFactory={clientFactory}
                 houseLocationClient={houseLocationClient}
                 house={house}
-                actorId={actorId}
                 isProvider={isProvider}
-                editable={editable}
+                editable={editable} 
+                consumptions={[]} 
+                providerId={""}
               />
             )) : ''
           ) : (

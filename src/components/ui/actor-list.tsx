@@ -1,5 +1,4 @@
 import { SetStateAction, useEffect, useState } from "react";
-import type { Schema } from "../../../amplify/data/resource";
 
 import {
   Button,
@@ -11,14 +10,15 @@ import {
 
 import ActorCard from "./actor-card";
 import ActorClient from "../../api/Actor";
+import { Schema } from "../../../amplify/data/resource";
 
 
 type PropsType = { actorClient: ActorClient };
 
 const ActorList = ({ actorClient } : PropsType) => {
 
-  const actorType: string = actorClient.getType();
-  const [actors, setActors] = useState<Array<Schema[actorType]["type"]>>([]);
+  const actorType = actorClient.getType();
+  const [actors, setActors] = useState<Array<Schema['Consumer']['type']>>([]);
   const [actorValue, setActorValue] = useState('');
   const [addLoading, setAddLoading] = useState(false);
 

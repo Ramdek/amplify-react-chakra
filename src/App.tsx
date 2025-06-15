@@ -43,7 +43,7 @@ function App() {
       setGroups(groups === undefined ? [] : groups);
       
       if (username != null) {
-        UserProfile.setCredentials(tokens?.accessToken, groups);
+        UserProfile.setCredentials(tokens?.accessToken as { payload: { sub: string; username: string; }; }, groups);
       }
       
       setLoading(false);

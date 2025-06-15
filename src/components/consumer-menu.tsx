@@ -66,7 +66,8 @@ const ConsumerMenu = ({ clientFactory, isProvider } : PropsType) => {
                       clientFactory={clientFactory}
                       actorId={consumer.id} 
                       actorName={consumer.userId == null ? consumer.id : consumer.userId} 
-                      isProvider={false}
+                      isProvider={false} 
+                      editable={false}
                     />
                   </CardBody>
                 </Card>
@@ -79,9 +80,10 @@ const ConsumerMenu = ({ clientFactory, isProvider } : PropsType) => {
         {idLoaded ? 
           <HouseList 
             clientFactory={clientFactory}
-            actorId={UserProfile.getId()} 
+            actorId={UserProfile.getId()}
             actorName={UserProfile.getName()}
-            isProvider={isProvider}
+            isProvider={isProvider} 
+            editable={false}
           />
         : 
           <Center minHeight="50%">

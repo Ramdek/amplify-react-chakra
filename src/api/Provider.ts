@@ -35,7 +35,7 @@ class ProviderClient implements ActorClient {
 
   updateAssociatedUser(provider: ProviderModel, associatedUserName: string) {
 
-    return new Promise<void>(async (res, rej) => {
+    return new Promise<void>(async (res) => {
 
       const userUpdatedId = associatedUserName === "" ? provider.id : associatedUserName;
 

@@ -72,7 +72,7 @@ class ConsumptionClient {
   }
 
   async getConsumer(consumption: Schema['Consumption']['type']) {
-    return this.#consumerClient.get(consumption.consumerId);
+    return this.#consumerClient.get(consumption.consumerId as string);
   }
 
   updateCredits(id: string , amount: number) {

@@ -24,9 +24,11 @@ const ConsumerConsume = ({ consumption, consumptionClient } : PropsType) => {
 
   const consume = (color: string) => {
     const value = Number(amountValue);
-    if (value <= consumption.availableCredits) {
+    const availableCredits = Number(consumption.availableCredits);
+
+    if (value <= availableCredits) {
       consumptionClient.addConsumption(consumption.id, color, value);
-      consumptionClient.updateCredits(consumption.id, (consumption.availableCredits - value));
+      consumptionClient.updateCredits(consumption.id, (availableCredits - value));
     }
   }
 

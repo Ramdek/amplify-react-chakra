@@ -1,5 +1,3 @@
-import type { Schema } from "../../../amplify/data/resource";
-
 import {
   Badge,
   HStack,
@@ -7,9 +5,7 @@ import {
 } from '@chakra-ui/react';
 
 
-type Actor = |
-  { actor: Schema["Consumer"]["type"] } |
-  { actor: Schema["Provider"]["type"] }
+type Actor = { actor: {id: string, name: string} }
 
 const Identification = ({ actor }: Actor) => {
 

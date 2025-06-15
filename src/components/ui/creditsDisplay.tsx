@@ -1,5 +1,3 @@
-import { SetStateAction, useState } from 'react';
-
 import {
   HStack,
   Text,

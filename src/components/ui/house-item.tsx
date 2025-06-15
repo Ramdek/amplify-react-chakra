@@ -79,7 +79,7 @@ const HouseItem = ({ clientFactory, houseLocationClient, house, consumptions, pr
               ) :
               consumption != undefined ? (
                 consumptions.map(consumption => (
-                  <ConsumerConsume key={consumption.id} actor={null} consumption={consumption} consumptionClient={consumptionClient} isProvider={isProvider} />
+                  <ConsumerConsume key={consumption.id} consumption={consumption} consumptionClient={consumptionClient} />
                 ))
               ) : ''
             }

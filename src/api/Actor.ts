@@ -1,5 +1,5 @@
 interface ActorClient {
-    getType: Function;
+    getType():  string;
     create: Function;
     subscribe: Function;
     delete: Function;

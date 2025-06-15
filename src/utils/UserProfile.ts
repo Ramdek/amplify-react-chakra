@@ -6,7 +6,6 @@ const client = generateClient<Schema>();
 const UserProfile = (function() {
 
   let id: string = "";
-  let owner_info: string = "";
   let full_name: string = "";
   let id_loaded: boolean = false;
 
@@ -53,10 +52,8 @@ const UserProfile = (function() {
   };
 
   const setCredentials = function(accessToken: { payload: { sub: string; username: string; }; }, groups: Array<String>) {
-    
-    const sub = accessToken.payload.sub as string;
+
     full_name = accessToken.payload.username as string;
-    owner_info = `${sub}::${full_name}`;
     retrieveId(groups!= null && groups.includes('PROVIDERS'));
   };
 
