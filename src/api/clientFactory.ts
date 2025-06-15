@@ -12,7 +12,7 @@ class ClientFactory {
     }
 
     createProviderClient() {
-        return new Provider(this.#client.models.Provider);
+        return new Provider(this.#client.models.Provider, this.createHouseLocationClient());
     }
 
     createConsumerClient() {

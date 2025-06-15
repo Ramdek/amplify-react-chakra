@@ -22,7 +22,9 @@ const UserProfile = (function() {
       }
     });
 
-    id = fetch?.data[0].id;
+    if (fetch?.data[0] != undefined) {
+      id = fetch?.data[0].id;
+    }
     id_loaded = true;
   };
 
@@ -40,7 +42,7 @@ const UserProfile = (function() {
     return full_name;
   };
 
-  const setCredentials = function(accessToken) {
+  const setCredentials = function(accessToken: { payload: { sub: string; username: string; }; }) {
     
     const sub = accessToken.payload.sub as string;
     full_name = accessToken.payload.username as string;

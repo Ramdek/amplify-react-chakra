@@ -12,7 +12,7 @@ class HouseLocation {
   }
 
   create(houseName: string, providerId: string, providerName: string) {
-    this.#client.create({ name: houseName, ownerId: providerId, userIds: [ providerName ] });
+    this.#client.create({ name: houseName, ownerId: providerId, providerId: providerName });
   }
 
   delete(id: string) {
@@ -27,7 +27,7 @@ class HouseLocation {
         },
       },
     }).subscribe({
-      next: (data) => subscribeCallback(data),
+      next: (data: any) => subscribeCallback(data),
     });
   }
 
@@ -43,25 +43,20 @@ class HouseLocation {
 
   updateProvider(houseLocation: HouseLocationModel, userId: string, userUpdatedId: string) {
 
-    console.log(userId);
-    console.log(`replace ${userId} in ${houseLocation.userIds} with ${ userUpdatedId }`);
-    
-    if (houseLocation.userIds == null) {
-      houseLocation.userIds = [ userUpdatedId ];
-    } else {
+    // if (houseLocation.userIds == null) {
+    //   houseLocation.userIds = [ userUpdatedId ];
+    // } else {
         
-      const index = houseLocation.userIds.indexOf(userId);
-      console.log(index)
-      if (! index) {
-      houseLocation.userIds[index] = userUpdatedId;
-      } else {
-      houseLocation.userIds.push(userUpdatedId);
-      }
-    }
+    //   const index = houseLocation.userIds.indexOf(userId);
+    //   console.log(index)
+    //   if (! index) {
+    //   houseLocation.userIds[index] = userUpdatedId;
+    //   } else {
+    //   houseLocation.userIds.push(userUpdatedId);
+    //   }
+    // }
 
-    console.log(houseLocation.userIds);
-
-    this.#client.update({ id: houseLocation.id, userIds: houseLocation.userIds })
+    this.#client.update({ id: houseLocation.id, providerId: userUpdatedId })
   }
 }
 

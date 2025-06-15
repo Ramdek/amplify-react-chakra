@@ -7,9 +7,11 @@ class Provider implements Actor {
 
   // Amplify api client
   #client;
+  #houseLocationClient;
 
-  constructor(client: any) {
+  constructor(client: any, houseLocationClient: HouseLocation) {
     this.#client = client;
+    this.#houseLocationClient = houseLocationClient;
   }
 
   getType() {
@@ -26,7 +28,7 @@ class Provider implements Actor {
 
   subscribe(subscribeCallback: Function) {
     this.#client.observeQuery().subscribe({
-      next: (data) => subscribeCallback(data),
+      next: (data: any) => subscribeCallback(data),
     });
   }
 
@@ -39,10 +41,10 @@ class Provider implements Actor {
 
       this.#client.update({ id: provider.id, userId: associatedUserName });
 
-      const houses = await HouseLocation.listHouses(provider.id);
-      houses.forEach(house => {
+      const houses = await this.#houseLocationClient.listHouses(provider.id);
+      houses.forEach((house: any) => {
 
-        HouseLocation.updateProvider(house, userId, userUpdatedId);
+        this.#houseLocationClient.updateProvider(house, userId, userUpdatedId);
       });
 
       res();

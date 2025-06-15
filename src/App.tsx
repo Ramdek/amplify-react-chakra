@@ -38,8 +38,6 @@ function App() {
     const fetchUserAndGroups = async () => {
       const { tokens } = await fetchAuthSession();
 
-      console.log(tokens)
-
       const username = tokens?.accessToken.payload.username as string;
       if (username != null) {
         UserProfile.setCredentials(tokens?.accessToken);
@@ -60,8 +58,6 @@ function App() {
   const providerClient = clientFactory.createProviderClient();
   const consumerClient = clientFactory.createConsumerClient();
   const houseLocationClient = clientFactory.createHouseLocationClient();
-
-  console.log(houseLocationClient)
 
   const { signOut } = useAuthenticator();
 

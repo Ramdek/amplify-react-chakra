@@ -42,7 +42,7 @@ const ActorList = ({ actorClient } : PropsType) => {
   return (
     <>
       {actors.map((actor) => (
-        <ActorCard key={actor.id} actor={actor} actorType={actorType} />
+        <ActorCard key={actor.id} actor={actor} actorClient={actorClient} />
       ))}
       
       <Center pt='4'>

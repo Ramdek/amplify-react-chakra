@@ -17,16 +17,14 @@ import {
   Tooltip
 } from '@chakra-ui/react';
 
-
 import Identification from "./identification"
-import Provider from "../../api/Provider";
-import Consumer from "../../api/Consumer";
+
 
 type PropsType = |
-  { actor: Schema["Consumer"]["type"], actorType: string } |
-  { actor: Schema["Provider"]["type"], actorType: string }
+  { actor: Schema["Consumer"]["type"], actorClient: Actor } |
+  { actor: Schema["Provider"]["type"], actorClient: Actor }
 
-const ActorCard = ({ actor, actorType } : PropsType) => {
+const ActorCard = ({ actor, actorClient } : PropsType) => {
 
   const [userValue, setUserValue] = useState(actor.userId);
   const [delLoading, setDelLoading] = useState(false);
@@ -36,15 +34,10 @@ const ActorCard = ({ actor, actorType } : PropsType) => {
 
   const assignUserName = () => {
 
-    // TODO: handle empty value (print None after update)
     if (userValue != actor.userId) {
 
       let promise = new Promise<void>(res => res());
-      if (actorType === "Provider") {
-        promise = Provider.updateAssociatedUser(actor as Schema["Provider"]["type"], userValue as string);
-      } else if (actorType === "Consumer") {
-        promise = Consumer.updateAssociatedUser(actor as Schema["Consumer"]["type"], userValue as string);
-      }
+      actorClient.updateAssociatedUser(actor, userValue);
       
       toast.promise(promise, {
         success: { title: 'Updated successfully', description: `${actor.name} #${actor.id.toUpperCase().slice(0, 4)} associated account updated` },
@@ -56,11 +49,7 @@ const ActorCard = ({ actor, actorType } : PropsType) => {
 
   const deleteActor = (id: string) => {
     setDelLoading(true);
-    if (actorType === "Provider") {
-      Provider.delete(id);
-    } else if (actorType === "Consumer") {
-      Consumer.delete(id);
-    }
+    actorClient.delete(id);
   }
 
   return (
@@ -74,13 +63,13 @@ const ActorCard = ({ actor, actorType } : PropsType) => {
         <Spacer/>
 
         <Badge mr='2' colorScheme='blue' >account</Badge>
-        <Editable mr='4' defaultValue={ ! actor.userId ? "None" : actor.userId }>
+        <Editable mr='4' placeholder='None' defaultValue={actor.userId}>
           <Tooltip label='Click to edit' shouldWrapChildren={true}>
             <EditablePreview paddingInline='2' _hover={{
             background: useColorModeValue('gray.100', 'gray.700'),
           }}/>
           </Tooltip>
-          <EditableInput paddingInline='2' value={userValue} onChange={handleChange} onBlur={assignUserName} />
+          <EditableInput paddingInline='2' value={! userValue ? "None" : userValue} onChange={handleChange} onBlur={assignUserName} />
         </Editable>
         
 
