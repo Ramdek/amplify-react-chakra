@@ -10,9 +10,10 @@ import {
 } from '@chakra-ui/react';
 
 import ActorCard from "./actor-card";
+import ActorClient from "../../api/Actor";
 
 
-type PropsType = { actorClient: Actor };
+type PropsType = { actorClient: ActorClient };
 
 const ActorList = ({ actorClient } : PropsType) => {
 

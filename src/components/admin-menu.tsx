@@ -10,19 +10,16 @@ import {
 
 
 import ActorList from './ui/actor-list';
-import { generateClient } from 'aws-amplify/api';
-import { Schema } from '../../amplify/data/resource';
-import Provider from '../api/Provider';
-import Consumer from '../api/Consumer';
+import ClientFactory from '../api/clientFactory';
 
 
-type PropsType = { providerClient: Provider, consumerClient: Consumer };
+type PropsType = { clientFactory: ClientFactory };
 
-const AdminMenu = ({ providerClient, consumerClient }: PropsType) => {
+const AdminMenu = ({ clientFactory }: PropsType) => {
 
   const actorClients = [
-    providerClient,
-    consumerClient
+    clientFactory.createProviderClient(),
+    clientFactory.createConsumerClient()
   ]
 
   return (

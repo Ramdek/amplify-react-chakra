@@ -19,14 +19,17 @@ import {
 import Identification from './ui/identification';
 import HouseList from './ui/house-list';
 import UserProfile from '../utils/UserProfile';
-import Provider from '../api/Provider';
-import HouseLocation from '../api/HouseLocation';
+import ClientFactory from '../api/clientFactory';
 
 
-type PropsType = { houseLocationClient: HouseLocation, providerClient: Provider, isAdmin: boolean };
+type PropsType = { 
+  clientFactory: ClientFactory,
+  isAdmin: boolean
+};
 
-const ProviderMenu = ({ houseLocationClient, providerClient, isAdmin } : PropsType) => {
+const ProviderMenu = ({ clientFactory, isAdmin } : PropsType) => {
 
+  const providerClient = clientFactory.createProviderClient();
   const [providers, setProviders] = useState<Array<Schema["Provider"]["type"]>>([]);
   const [idLoaded, setIdLoaded] = useState(false);
 
@@ -62,9 +65,11 @@ const ProviderMenu = ({ houseLocationClient, providerClient, isAdmin } : PropsTy
                     <CardBody p='2'>
                       <Text>Locations</Text>
                       <HouseList 
-                        houseLocationClient={houseLocationClient} 
-                        providerId={provider.id} 
-                        providerName={provider.userId == null ? provider.id : provider.userId} 
+                        clientFactory={clientFactory}
+                        actorId={provider.id} 
+                        actorName={provider.userId == null ? provider.id : provider.userId} 
+                        isProvider={true}
+                        editable={true}
                       />
                     </CardBody>
                   </Card>
@@ -76,9 +81,12 @@ const ProviderMenu = ({ houseLocationClient, providerClient, isAdmin } : PropsTy
         <>
           {idLoaded ? 
             <HouseList 
-              houseLocationClient={houseLocationClient} 
-              providerId={UserProfile.getId()} 
-              providerName={UserProfile.getName()}
+              clientFactory={clientFactory}
+              actorId={UserProfile.getId()} 
+              actorName={UserProfile.getName()}
+              isProvider={true}
+              isAdmin={isAdmin}
+              editable={true}
             />
           : 
             <Center minHeight="50%">

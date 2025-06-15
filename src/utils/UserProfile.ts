@@ -14,13 +14,23 @@ const UserProfile = (function() {
     return id;
   };
 
-  const retrieveId = async function() {
+  const retrieveId = async function(isProvider: boolean) {
 
-    let fetch = await client.models.Provider.list({
-      filter: {
-        userId: { eq : full_name }
-      }
-    });
+    let fetch;
+    
+    if (isProvider) {
+      fetch = await client.models.Provider.list({
+        filter: {
+          userId: { eq : full_name }
+        }
+      });
+    } else {
+      fetch = await client.models.Consumer.list({
+        filter: {
+          userId: { eq : full_name }
+        }
+      });
+    }
 
     if (fetch?.data[0] != undefined) {
       id = fetch?.data[0].id;
@@ -42,12 +52,12 @@ const UserProfile = (function() {
     return full_name;
   };
 
-  const setCredentials = function(accessToken: { payload: { sub: string; username: string; }; }) {
+  const setCredentials = function(accessToken: { payload: { sub: string; username: string; }; }, groups: Array<String>) {
     
     const sub = accessToken.payload.sub as string;
     full_name = accessToken.payload.username as string;
     owner_info = `${sub}::${full_name}`;
-    retrieveId();
+    retrieveId(groups!= null && groups.includes('PROVIDERS'));
   };
 
   return {

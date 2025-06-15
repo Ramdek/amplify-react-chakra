@@ -18,11 +18,12 @@ import {
 } from '@chakra-ui/react';
 
 import Identification from "./identification"
+import ActorClient from "../../api/Actor";
 
 
 type PropsType = |
-  { actor: Schema["Consumer"]["type"], actorClient: Actor } |
-  { actor: Schema["Provider"]["type"], actorClient: Actor }
+  { actor: Schema["Consumer"]["type"], actorClient: ActorClient } |
+  { actor: Schema["Provider"]["type"], actorClient: ActorClient }
 
 const ActorCard = ({ actor, actorClient } : PropsType) => {
 

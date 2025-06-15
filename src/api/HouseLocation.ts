@@ -14,6 +14,14 @@ class HouseLocation {
   create(houseName: string, providerId: string, providerName: string) {
     this.#client.create({ name: houseName, ownerId: providerId, providerId: providerName });
   }
+  
+  async get(id: string) {
+    const { data: house } = await this.#client.get({
+      id
+    });
+
+    return house;
+  }
 
   delete(id: string) {
     this.#client.delete({ id });
@@ -41,20 +49,7 @@ class HouseLocation {
     return houses
   }
 
-  updateProvider(houseLocation: HouseLocationModel, userId: string, userUpdatedId: string) {
-
-    // if (houseLocation.userIds == null) {
-    //   houseLocation.userIds = [ userUpdatedId ];
-    // } else {
-        
-    //   const index = houseLocation.userIds.indexOf(userId);
-    //   console.log(index)
-    //   if (! index) {
-    //   houseLocation.userIds[index] = userUpdatedId;
-    //   } else {
-    //   houseLocation.userIds.push(userUpdatedId);
-    //   }
-    // }
+  updateProvider(houseLocation: HouseLocationModel, userUpdatedId: string) {
 
     this.#client.update({ id: houseLocation.id, providerId: userUpdatedId })
   }

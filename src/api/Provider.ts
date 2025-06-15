@@ -1,9 +1,10 @@
 import { Schema } from "../../amplify/data/resource";
+import ActorClient from "./Actor";
 import HouseLocation from "./HouseLocation";
 
 type ProviderModel = Schema["Provider"]["type"];
 
-class Provider implements Actor {
+class ProviderClient implements ActorClient {
 
   // Amplify api client
   #client;
@@ -36,7 +37,6 @@ class Provider implements Actor {
 
     return new Promise<void>(async (res, rej) => {
 
-      const userId = provider.userId === "" ? provider.id : provider.userId;
       const userUpdatedId = associatedUserName === "" ? provider.id : associatedUserName;
 
       this.#client.update({ id: provider.id, userId: associatedUserName });
@@ -44,7 +44,7 @@ class Provider implements Actor {
       const houses = await this.#houseLocationClient.listHouses(provider.id);
       houses.forEach((house: any) => {
 
-        this.#houseLocationClient.updateProvider(house, userId, userUpdatedId);
+        this.#houseLocationClient.updateProvider(house, userUpdatedId);
       });
 
       res();
@@ -53,4 +53,4 @@ class Provider implements Actor {
   }
 }
 
-export default Provider;
+export default ProviderClient;
