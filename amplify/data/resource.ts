@@ -14,7 +14,8 @@ const schema = a.schema({
       houses: a.hasMany('HouseLocation', 'ownerId')
     }).authorization(allow => [
       allow.ownerDefinedIn('userId').to(['read']),
-      allow.group('ADMINS')
+      allow.group('ADMINS'),
+      allow.guest().to(['read'])
     ]),
   Consumer: a
     .model({
@@ -23,7 +24,8 @@ const schema = a.schema({
       consumption: a.hasMany('Consumption', 'consumerId')
     }).authorization(allow => [
       allow.group('PROVIDERS'),
-      allow.group('ADMINS')
+      allow.group('ADMINS'),
+      allow.ownerDefinedIn('userId')
     ]),
   HouseLocation: a
     .model({
@@ -35,15 +37,31 @@ const schema = a.schema({
       consumption: a.hasMany('Consumption', 'providerId')
     }).authorization(allow => [
       allow.ownerDefinedIn('providerId'),
-      allow.group('ADMINS')
+      allow.group('ADMINS'),
+      allow.authenticated().to(['read'])
     ]),
   Consumption: a
     .model({
-      userIds: a.string().array(),
-      availableCredits : a.integer().authorization(allow => [allow.ownerDefinedIn('providerUserId')]),
-      consumedRed : a.integer().authorization(allow => [allow.ownerDefinedIn('consumerUserId')]),
-      consumedGreen : a.integer().authorization(allow => [allow.ownerDefinedIn('consumerUserId')]),
-      consumedBlue : a.integer().authorization(allow => [allow.ownerDefinedIn('consumerUserId')]),
+      availableCredits : a.integer().authorization(allow => [
+        allow.ownerDefinedIn('providerUserId'),
+        allow.ownerDefinedIn('consumerUserId').to(['read']),
+        allow.group('ADMINS')
+      ]),
+      consumedRed : a.integer().authorization(allow => [
+        allow.ownerDefinedIn('consumerUserId'),
+        allow.ownerDefinedIn('providerUserId'),
+        allow.group('ADMINS')
+      ]),
+      consumedGreen : a.integer().authorization(allow => [
+        allow.ownerDefinedIn('consumerUserId'),
+        allow.ownerDefinedIn('providerUserId'),
+        allow.group('ADMINS')
+      ]),
+      consumedBlue : a.integer().authorization(allow => [
+        allow.ownerDefinedIn('consumerUserId'),
+        allow.ownerDefinedIn('providerUserId'),
+        allow.group('ADMINS')
+      ]),
       providerUserId: a.string(),
       consumerUserId: a.string(),
       providerId: a.id(),
@@ -51,8 +69,10 @@ const schema = a.schema({
       provider: a.belongsTo('HouseLocation', 'providerId'),
       consumer: a.belongsTo('Consumer', 'consumerId'),
     }).authorization(allow => [
-      allow.ownerDefinedIn('providerUserId').to(["read"]),
       allow.ownerDefinedIn('consumerUserId').to(["read"]),
+      allow.group('PROVIDERS').to(['create', 'delete']),
+      allow.ownerDefinedIn('providerUserId'),
+      allow.group('ADMINS')
     ])
 }).authorization(allow => [
   allow.group('ADMINS'),
