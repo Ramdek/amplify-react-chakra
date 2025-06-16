@@ -14,7 +14,7 @@ import {
 import { Tabs, TabList, TabPanels, Tab, TabPanel } from '@chakra-ui/react'
 import { LuUser } from "react-icons/lu";
 
-import { useAuthenticator } from '@aws-amplify/ui-react';
+import { signOut } from 'aws-amplify/auth';
 import { fetchAuthSession } from 'aws-amplify/auth';
 
 import ProviderMenu from "./components/provider-menu";
@@ -56,8 +56,6 @@ function App() {
   const isProvider = () => groups.includes('PROVIDERS');
 
   const clientFactory = new ClientFactory(client);
-
-  const { signOut } = useAuthenticator();
 
   let defaultIndex = 2;
 
@@ -132,7 +130,7 @@ function App() {
         </Box>
         <Flex alignItems='center' justifyContent='space-between'>
           <Text as='i' fontSize='sm' color='grey' >Made by Jonathan Sling</Text>
-          <Button onClick={signOut} variant='outline' bg='whiteAlpha.600'>Sign out</Button>
+          <Button onClick={() => signOut()} variant='outline' bg='whiteAlpha.600'>Sign out</Button>
         </Flex>
       </Stack>
   );
