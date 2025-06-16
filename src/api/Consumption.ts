@@ -75,7 +75,7 @@ class ConsumptionClient {
     return this.#consumerClient.get(consumption.consumerId as string);
   }
 
-  updateCredits(id: string , amount: number) {
+  async updateCredits(id: string , amount: number) {
     this.#client.update({ id: id, availableCredits: amount });
   }
 
@@ -99,7 +99,7 @@ class ConsumptionClient {
     }
   }
 
-  async listConsumptions(consumerId: string) {
+  async listConsumerConsumptions(consumerId: string) {
     const { data: houses } = await this.#client.list({
       filter: {
         consumerId: { eq: consumerId }
@@ -109,9 +109,24 @@ class ConsumptionClient {
     return houses
   }
 
-  updateProvider(consumption: ConsumptionModel, userUpdatedId: string) {
+  async listProviderConsumptions(providerId: string) {
+    const { data: houses } = await this.#client.list({
+      filter: {
+        providerId: { eq: providerId }
+      }
+    });
+
+    return houses
+  }
+
+  updateConsumer(consumption: ConsumptionModel, userUpdatedId: string) {
 
     this.#client.update({ id: consumption.id, consumerUserId: userUpdatedId })
+  }
+
+  updateProvider(consumption: ConsumptionModel, userUpdatedId: string) {
+
+    this.#client.update({ id: consumption.id, providerUserId: userUpdatedId })
   }
 }
 

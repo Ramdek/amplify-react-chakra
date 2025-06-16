@@ -1,6 +1,6 @@
 import { Schema } from "../../amplify/data/resource";
 import ActorClient from "./Actor";
-import HouseLocation from "./HouseLocation";
+import ClientFactory from "./clientFactory";
 
 type ProviderModel = Schema["Provider"]["type"];
 
@@ -8,11 +8,11 @@ class ProviderClient implements ActorClient {
 
   // Amplify api client
   #client;
-  #houseLocationClient;
+  #clientFactory;
 
-  constructor(client: any, houseLocationClient: HouseLocation) {
+  constructor(client: any, clientFactory: ClientFactory) {
     this.#client = client;
-    this.#houseLocationClient = houseLocationClient;
+    this.#clientFactory = clientFactory;
   }
 
   getType() {
@@ -35,16 +35,24 @@ class ProviderClient implements ActorClient {
 
   updateAssociatedUser(provider: ProviderModel, associatedUserName: string) {
 
+    const houseLocationClient = this.#clientFactory.createHouseLocationClient();
+    const consumptionClient = this.#clientFactory.createConsumptionClient();
+
     return new Promise<void>(async (res) => {
 
       const userUpdatedId = associatedUserName === "" ? provider.id : associatedUserName;
 
       this.#client.update({ id: provider.id, userId: associatedUserName });
 
-      const houses = await this.#houseLocationClient.listHouses(provider.id);
-      houses.forEach((house: any) => {
+      const houses = await houseLocationClient.listHouses(provider.id);
+      houses.forEach(async (house: any) => {
 
-        this.#houseLocationClient.updateProvider(house, userUpdatedId);
+        const consumptions = await consumptionClient.listProviderConsumptions(house.id);
+        houseLocationClient.updateProvider(house, userUpdatedId);
+        consumptions.forEach((consumption: any) => {
+  
+          consumptionClient.updateProvider(consumption, userUpdatedId);
+        });
       });
 
       res();

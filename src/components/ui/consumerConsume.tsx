@@ -22,7 +22,7 @@ const ConsumerConsume = ({ consumption, consumptionClient } : PropsType) => {
 
   const handleChange = (event: { target: { value: SetStateAction<string>; }; }) => setAmountValue(event.target.value);
 
-  const consume = (color: string) => {
+  const consume = async (color: string) => {
     const value = Number(amountValue);
     const availableCredits = Number(consumption.availableCredits);
 

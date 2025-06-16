@@ -68,10 +68,10 @@ class ConsumerClient implements ActorClient {
 
       this.#client.update({ id: consumer.id, userId: associatedUserName });
 
-      const consumptions = await consumptionClient.listConsumptions(consumer.id);
+      const consumptions = await consumptionClient.listConsumerConsumptions(consumer.id);
       consumptions.forEach((consumption: any) => {
 
-        consumptionClient.updateProvider(consumption, userUpdatedId);
+        consumptionClient.updateConsumer(consumption, userUpdatedId);
       });
 
       res();

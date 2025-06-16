@@ -90,7 +90,7 @@ const HouseList = ({ clientFactory, actorId, actorName, isProvider, editable }: 
                 isProvider={isProvider}
                 editable={editable} 
                 consumptions={[]} 
-                providerId={""}
+                providerId={actorId}
               />
             )) : ''
           ) : (

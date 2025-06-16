@@ -50,6 +50,7 @@ const ConsumerList = ({ clientFactory, houseLocationId, providerId, editable }: 
           });
         }
 
+        console.log(houseLocationId)
         setConsumersConsumptions(customList);
         setLoading(false);
       });
