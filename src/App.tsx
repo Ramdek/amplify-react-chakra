@@ -100,17 +100,24 @@ function App() {
                 <TabPanels mt='2' maxHeight='480px' overflow='scroll'>
                   <TabPanel>
 
-                    <AdminMenu clientFactory={clientFactory} />
+                    { isAdmin() ? (
+                      <AdminMenu clientFactory={clientFactory} />
+                    ) : '' }
 
                   </TabPanel>
                   <TabPanel>
 
-                    <ProviderMenu clientFactory={clientFactory} isAdmin={isAdmin()} />
+
+                    { isProvider() || isAdmin() ? (
+                      <ProviderMenu clientFactory={clientFactory} isAdmin={isAdmin()} />
+                    ) : '' }
 
                   </TabPanel>
                   <TabPanel>
 
-                    <ConsumerMenu clientFactory={clientFactory} isProvider={isAdmin()} />
+                    { ! isProvider() ? (
+                      <ConsumerMenu clientFactory={clientFactory} isProvider={isAdmin()} />
+                    ) : '' }
 
                   </TabPanel>
                 </TabPanels>
